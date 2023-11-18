@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AddressCreateView,UserOrderView,get_order_items,create_order,AdminOrderView,OrdersInRestaurantView,get_order_details,InitiatePaymentView,SuccessPaymentView,OrderView,orders_detail,change_order_status
+from .views import AddressCreateView,CancelOrderView,UserOrderView,get_order_items,create_order,AdminOrderView,OrdersInRestaurantView,get_order_details,InitiatePaymentView,SuccessPaymentView,OrderView,orders_detail,change_order_status
 from django.urls import re_path
 
 from . import consumers
@@ -19,7 +19,9 @@ urlpatterns = [
     path('detail/<int:order_id>/', get_order_details, name='get_order_details'),
     path('items/<int:order_id>/', get_order_items, name='get_order_items'),
     path('all-orders/',AdminOrderView.as_view(),name='orders'),
+    path('cancel/<int:order_id>/', CancelOrderView.as_view(), name='cancel_order'),
      re_path(r'restaurant/$', consumers.OrderNotificationConsumer.as_asgi()),
+     
    
         
 

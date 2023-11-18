@@ -453,6 +453,49 @@ class SuccessPaymentView(APIView):
 
 
 
+# views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class CancelOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+
+            # Check if the order is cancellable
+            if order.is_ordered and order.status not in ['Cancelled', 'Delivered']:
+                # Perform the cancellation logic
+                order.status = 'Cancelled'
+                order.is_ordered = False
+                order.save()
+
+                # Refund the payment
+                # Add your logic here to refund the payment to the user
+                # You may need to use a payment gateway API to process the refund
+
+                return Response({"message": "Order cancelled successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Order cannot be cancelled"}, status=status.HTTP_400_BAD_REQUEST)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 from rest_framework.generics import RetrieveAPIView
 
