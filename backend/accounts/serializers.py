@@ -7,17 +7,17 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-# class SignUpSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Account
-#         fields = ('first_name', 'last_name', 'email', 'username', 'phone_number', 'password')
-
-from rest_framework import serializers
-
 class SignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = '__all__'
+        fields = ('first_name', 'last_name', 'email', 'username', 'phone_number', 'password')
+
+# from rest_framework import serializers
+
+# class SignUpSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Account
+#         fields = '__all__'
 
 
     #Checking Email Already Exist

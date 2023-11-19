@@ -35,7 +35,7 @@ from .serializers import ItemSerializer
 #SignUp 
 class SignUpView(generics.GenericAPIView):
     serializer_class    = SignUpSerializer
-    permission_classes  = [AllowAny]
+    # permission_classes  = [AllowAny]
 
     def post(self, request: Request):
         data = request.data
