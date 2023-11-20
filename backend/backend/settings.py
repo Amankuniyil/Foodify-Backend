@@ -20,6 +20,18 @@ import environ
 
 environ.Env.read_env()
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+
+CLOUDINARY_STORAGE = {
+'CLOUD_NAME': 'df0zplobp',
+'API_KEY': '574194622555792',
+'API_SECRET': 'Dwym_sh5xwA2TwLRpVLtuE30nyM',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # URL that handles the media served from MEDIA_ROOT.
@@ -57,6 +69,8 @@ INSTALLED_APPS = [
     'orders',
     'channels',
     'django_redis',
+    'cloudinary',
+    'cloudinary_storage',
 
     'menu',
 ]
