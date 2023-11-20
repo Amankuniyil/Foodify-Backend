@@ -24,6 +24,8 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+import cloudinary_storage
+
 
 CLOUDINARY_STORAGE = {
 'CLOUD_NAME': 'df0zplobp',
