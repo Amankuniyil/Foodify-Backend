@@ -312,6 +312,7 @@ class InitiatePaymentView(APIView):
     def post(self, request):
         try:
             order_id = request.data.get('order_number')
+ 
 
             current_user = request.user
 
@@ -461,26 +462,65 @@ from rest_framework import status
 class CancelOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, order_id):
+    def post(self, request):
         try:
+            order_id = request.data.get('order_number')
+         
+
+            current_user = request.user
+
+            # Extract order details from the request
             order = Order.objects.get(id=order_id)
+            order_number = order.order_number
+            order_total = order.order_total
 
-            # Check if the order is cancellable
-            if order.is_ordered and order.status not in ['Cancelled', 'Delivered']:
+            # Get the user associated with the current_user
+            user = get_object_or_404(Account, email=current_user.email)
+
+            # You should add logic to validate that the user has permission to initiate payment for this order
+
+            amount_in_paise = int(float(order_total) * 100)
+
+            RAZORPAY_KEY_ID = settings.RAZORPAY_KEY_ID
+            RAZORPAY_KEY_SECRET = settings.RAZORPAY_KEY_SECRET
+
+            client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+            # Calculate admin fee
+            admin_fee = (0.15 * amount_in_paise) / 100
+            deducted_amount = amount_in_paise - admin_fee
+
+            order_response = client.order.create({
+                'amount': deducted_amount,
+                'currency': 'INR',
+                'payment_capture': 1,
+            })
+
+            # Create a new order if it doesn't already exist
+
+
+            # Update the razorpay_order_id field
+            order.razorpay_order_id = order_response.get('id')
+            # order.razorpay_payment_id = request.data.get('razorpay_payment_id')
+            # order.razorpay_signature = request.data.get('razorpay_signature')
+            
                 # Perform the cancellation logic
-                order.status = 'Cancelled'
-                order.is_ordered = False
-                order.save()
+            order.status = 'Cancelled'
+            order.is_ordered = False
+            order.save()
 
-                # Refund the payment
-                # Add your logic here to refund the payment to the user
-                # You may need to use a payment gateway API to process the refund
+            # You should associate this order with your specific logic in your app
 
-                return Response({"message": "Order cancelled successfully"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"error": "Order cannot be cancelled"}, status=status.HTTP_400_BAD_REQUEST)
-        except Order.DoesNotExist:
-            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+            serializer = OrderCreateSerializer(order)
+            data = {
+                "order_response": order_response,
+                "order_id": order.id,
+                "razorpay_order_id": order.razorpay_order_id,
+            }
+
+            return Response(data)
+        except Account.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

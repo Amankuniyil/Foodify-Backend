@@ -19,7 +19,7 @@ urlpatterns = [
     path('detail/<int:order_id>/', get_order_details, name='get_order_details'),
     path('items/<int:order_id>/', get_order_items, name='get_order_items'),
     path('all-orders/',AdminOrderView.as_view(),name='orders'),
-    path('cancel/<int:order_id>/', CancelOrderView.as_view(), name='cancel_order'),
+    path('cancel/', CancelOrderView.as_view(), name='cancel_order'),
      re_path(r'restaurant/$', consumers.OrderNotificationConsumer.as_asgi()),
      
    
