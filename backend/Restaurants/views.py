@@ -4,7 +4,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import RestaurantProfile
-from .serializers import RestaurantProfileSerializer
+from .serializers import RestaurantProfileSerializer,RestaurantSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from accounts.models import Account
@@ -42,9 +42,9 @@ class RestaurantProfileView(APIView):
         user.save()
         print(request.data)
 
-        serializer = RestaurantProfileSerializer(profile, data=request.data)
+        serializer = RestaurantSerializer(profile, data=request.data)
 
-        if serializer.is_valid():
+        try:
             # Handle file uploads (if any)
             profile.profile_photo = request.FILES.get('profile_photo', profile.profile_photo)
             profile.image = request.FILES.get('image', profile.image)
@@ -64,8 +64,11 @@ class RestaurantProfileView(APIView):
 
             profile.save()
             return Response({'message': 'Created/Updated successfully'}, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RestaurantProfile.DoesNotExist:
+            return Response({'message': 'Restaurant profile not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # else:
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         
 @receiver(post_save, sender=RestaurantProfile)
