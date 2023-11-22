@@ -93,7 +93,8 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [  "http://localhost:3000",
-                        "https://foodify-frontend-six.vercel.app/",
+    "https://foodify-frontend-six.vercel.app/",
+    'https://foodify-frontend-1ca1-lgbsyudq9-aman-ahmeds-projects.vercel.app',
 
    
 ]
