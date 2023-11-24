@@ -16,6 +16,7 @@ from .views import (
 urlpatterns = [
     path('restaurant-createprofile/', RestaurantProfileView.as_view(), name='create-restaurant-profile'),
     path('restaurant-createprofile/<int:id>/', RestaurantProfileView.as_view(), name='update-restaurant-profile'),
+    path('restaurant-createprofile/', RestaurantProfileView.as_view(), name='update-restaurant-profile'),
     path('restaurant-profiles/', RestaurantProfileListView.as_view(), name='restaurant-profile-list'),
      path('get-restaurant-profile/<int:restaurant_id>/', GetRestaurantProfileView.as_view(), name='get-restaurant-profile'),
      path('get-res-profile/', GetResProfileView.as_view(), name='get-restaurant-profile'),

@@ -112,7 +112,7 @@ class CheckRegistrationView(APIView):
 
 
 class RestaurantProfileListView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         profiles = RestaurantProfile.objects.all()
