@@ -303,7 +303,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-
+from .models import Order
+from .serializers import OrderCreateSerializer
 
 
 
@@ -342,8 +343,6 @@ class InitiatePaymentView(APIView):
             admin_fee = (0.15 * amount_in_paise) / 100
             deducted_amount = amount_in_paise - admin_fee
 
-            print('ded amount',deducted_amount)
-
             
 
             order_response = client.order.create({
@@ -351,8 +350,7 @@ class InitiatePaymentView(APIView):
                 'currency': 'INR',
                 'payment_capture': 1,
             })
-            order_id = order_response["id"]
-            
+ 
             
             
 
