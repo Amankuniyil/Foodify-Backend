@@ -314,7 +314,6 @@ class InitiatePaymentView(APIView):
     def post(self, request):
         try:
             order_id = request.data.get('order_number')
-            
 
             current_user = request.user
 
@@ -327,32 +326,23 @@ class InitiatePaymentView(APIView):
             user = get_object_or_404(Account, email=current_user.email)
 
             # You should add logic to validate that the user has permission to initiate payment for this order
-            
 
             amount_in_paise = int(float(order_total) * 100)
 
             RAZORPAY_KEY_ID = settings.RAZORPAY_KEY_ID
             RAZORPAY_KEY_SECRET = settings.RAZORPAY_KEY_SECRET
-            
 
             client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
-            
-            
 
             # Calculate admin fee
             admin_fee = (0.15 * amount_in_paise) / 100
             deducted_amount = amount_in_paise - admin_fee
-
-            
 
             order_response = client.order.create({
                 'amount': deducted_amount,
                 'currency': 'INR',
                 'payment_capture': 1,
             })
- 
-            
-            
 
             # Create a new order if it doesn't already exist
             order, created = Order.objects.get_or_create(
