@@ -8,7 +8,9 @@ from .models import Address,OrderItem,Order
 from menu.models import Food
 from cart.models import Cart,CartItem
 from accounts.models import Account
+from django.conf import settings
 import datetime
+
 from Restaurants.models import RestaurantProfile
 
 
@@ -301,10 +303,9 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .models import Order
-from .serializers import OrderCreateSerializer
-from django.conf import settings
-import razorpay
+
+
+
 
 class InitiatePaymentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -312,7 +313,7 @@ class InitiatePaymentView(APIView):
     def post(self, request):
         try:
             order_id = request.data.get('order_number')
- 
+            
 
             current_user = request.user
 
@@ -325,23 +326,35 @@ class InitiatePaymentView(APIView):
             user = get_object_or_404(Account, email=current_user.email)
 
             # You should add logic to validate that the user has permission to initiate payment for this order
+            
 
             amount_in_paise = int(float(order_total) * 100)
 
             RAZORPAY_KEY_ID = settings.RAZORPAY_KEY_ID
             RAZORPAY_KEY_SECRET = settings.RAZORPAY_KEY_SECRET
+            
 
             client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+            
+            
 
             # Calculate admin fee
             admin_fee = (0.15 * amount_in_paise) / 100
             deducted_amount = amount_in_paise - admin_fee
+
+            print('ded amount',deducted_amount)
+
+            
 
             order_response = client.order.create({
                 'amount': deducted_amount,
                 'currency': 'INR',
                 'payment_capture': 1,
             })
+            order_id = order_response["id"]
+            
+            
+            
 
             # Create a new order if it doesn't already exist
             order, created = Order.objects.get_or_create(
