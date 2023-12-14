@@ -155,6 +155,35 @@ from .models import RestaurantProfile
 from .serializers import RestaurantProfileSerializer
 from django.contrib.auth.models import User
 
+# RestaurantProfile
+
+# class GetResProfileView(APIView):
+
+#     @csrf_exempt
+#     def get(self, request):
+#         try:
+#             # Assuming that the user is authenticated and represents a restaurant
+#             user = request.user
+#             restaurant_profile = get_object_or_404(RestaurantProfile, restaurant=user)
+
+#             serializer = RestaurantProfileSerializer(restaurant_profile)
+#             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+        
+#         except RestaurantProfile.DoesNotExist:
+#             return Response({"message": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import RestaurantProfile  # Import your RestaurantProfile model
+from .serializers import RestaurantProfileSerializer  # Import your serializer
+
 class GetResProfileView(APIView):
 
     @csrf_exempt
@@ -162,13 +191,18 @@ class GetResProfileView(APIView):
         try:
             # Assuming that the user is authenticated and represents a restaurant
             user = request.user
-            restaurant_profile = get_object_or_404(RestaurantProfile, restaurant=user)
+            print('user of the restaurant',user)
+            print('user id of the restaurant',user.id)
+            # restaurant_profile = get_object_or_404(RestaurantProfile, restaurant=user.id)
+            restaurant_profile=RestaurantProfile.objects.get(restaurant=user.id)
+            print('restaurant_profile',restaurant_profile)
 
             serializer = RestaurantProfileSerializer(restaurant_profile)
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         
         except RestaurantProfile.DoesNotExist:
             return Response({"message": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 
@@ -321,3 +355,19 @@ class OrdersPerRestaurantView(View):
         }
 
         return JsonResponse(data)
+
+
+class ResProfile(APIView):
+    permission_classes=[IsAuthenticated]
+    parser_classes=(MultiPartParser, FormParser)
+
+    def get(self,request,*args,**kwargs):
+        try:
+            profile=RestaurantProfile.objects.get(restaurant=request.user)
+            profile=profile.id
+
+
+            # serializer=RestaurantProfileSerializer(profile)
+            return Response( status=status.HTTP_200_OK)
+        except RestaurantProfile.DoesNotExist:
+            return Response({'message': 'Restaurant profile not found'}, status=status.HTTP_404_NOT_FOUND)

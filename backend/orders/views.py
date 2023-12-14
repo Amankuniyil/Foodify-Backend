@@ -308,22 +308,106 @@ from .serializers import OrderCreateSerializer
 
 
 
+# class InitiatePaymentView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         try:
+#             order_id = request.data.get('order_number')
+
+#             current_user = request.user
+
+#             # Extract order details from the request
+#             order = Order.objects.get(id=order_id)
+#             order_number = order.order_number
+#             order_total = order.order_total
+
+#             # Get the user associated with the current_user
+#             user = get_object_or_404(Account, email=current_user.email)
+
+#             # You should add logic to validate that the user has permission to initiate payment for this order
+
+#             amount_in_paise = int(float(order_total) * 100)
+
+#             RAZORPAY_KEY_ID = settings.RAZORPAY_KEY_ID
+#             RAZORPAY_KEY_SECRET = settings.RAZORPAY_KEY_SECRET
+
+#             client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+#             # Calculate admin fee
+#             admin_fee = (0.15 * amount_in_paise) / 100
+#             deducted_amount = amount_in_paise - admin_fee
+
+#             print('ded amount',deducted_amount)
+
+#             order_response = client.order.create({
+#                 'amount': deducted_amount,
+#                 'currency': 'INR',
+#                 'payment_capture': 1,
+#             })
+
+#             # Create a new order if it doesn't already exist
+#             order, created = Order.objects.get_or_create(
+#                 id=order_id,
+#                 defaults={
+#                     'user': user,
+#                     'order_number': order_number,
+#                     'order_total': order_total,
+#                     'status': 'Order Confirmed',
+#                     'created_at': timezone.now(),
+#                     'updated_at': timezone.now(),
+#                 }
+#             )
+
+#             # Update the razorpay_order_id field
+#             order.razorpay_order_id = order_response.get('id')
+#             # order.razorpay_payment_id = request.data.get('razorpay_payment_id')
+#             # order.razorpay_signature = request.data.get('razorpay_signature')
+#             order.is_paid = True
+#             order.is_ordered = True
+#             order.save()
+
+#             # You should associate this order with your specific logic in your app
+
+#             serializer = OrderCreateSerializer(order)
+#             data = {
+#                 "order_response": order_response,
+#                 "order_id": order.id,
+#                 "razorpay_order_id": order.razorpay_order_id,
+#             }
+
+#             return Response(data)
+#         except Account.DoesNotExist:
+#             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+        
+
+
+
+
 class InitiatePaymentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
             order_id = request.data.get('order_number')
+            print('orderid is  ',order_id)
 
             current_user = request.user
+            print('user  ',current_user)
 
             # Extract order details from the request
+            
             order = Order.objects.get(id=order_id)
             order_number = order.order_number
             order_total = order.order_total
 
             # Get the user associated with the current_user
             user = get_object_or_404(Account, email=current_user.email)
+
 
             # You should add logic to validate that the user has permission to initiate payment for this order
 
@@ -337,12 +421,21 @@ class InitiatePaymentView(APIView):
             # Calculate admin fee
             admin_fee = (0.15 * amount_in_paise) / 100
             deducted_amount = amount_in_paise - admin_fee
+            print('working 1')
+            print('amount',deducted_amount)
 
             order_response = client.order.create({
                 'amount': deducted_amount,
                 'currency': 'INR',
                 'payment_capture': 1,
             })
+            razorpay_order_id = order_response['id']
+            print("Razorpay Order ID:", razorpay_order_id)
+            print('working 2')
+            
+           
+
+            
 
             # Create a new order if it doesn't already exist
             order, created = Order.objects.get_or_create(
@@ -356,29 +449,54 @@ class InitiatePaymentView(APIView):
                     'updated_at': timezone.now(),
                 }
             )
-
-            # Update the razorpay_order_id field
-            order.razorpay_order_id = order_response.get('id')
-            # order.razorpay_payment_id = request.data.get('razorpay_payment_id')
-            # order.razorpay_signature = request.data.get('razorpay_signature')
-            order.is_paid = True
+            # order.is_paid = True
+            # received_order_id = data.get("razorpay_order_id")
+            # print('rec dat',id)
             order.is_ordered = True
+            order.razorpay_order_id=razorpay_order_id
             order.save()
+
+            
+
 
             # You should associate this order with your specific logic in your app
 
             serializer = OrderCreateSerializer(order)
-            data = {
-                "order_response": order_response,
-                "order_id": order.id,
-                "razorpay_order_id": order.razorpay_order_id,
-            }
+            data = {"order_response": order_response, "order_id": order.id}
 
+            print('working 3')
+        
+            
             return Response(data)
         except Account.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+        #             serializer = PropertyBookingSerializer(order)
+        #     data = {"order_response": order_response, "order": serializer.data}
+        #     return Response(data)
+        # except Account.DoesNotExist:
+        #     return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        # except Property.DoesNotExist:
+        #     return Response({"error": "Property not found"}, status=status.HTTP_404_NOT_FOUND)
+        # except Exception as e:
+            
+        #     return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -388,70 +506,58 @@ class SuccessPaymentView(APIView):
 
     def post(self, request, format=None):
         data = request.data.get("data", {})
-        print('data',data)
-        received_order_id = data.get("order_id")
-        print('received_order_id',received_order_id)
+        print('data', data)
+        received_order_id = data.get("razorpay_order_id")
+        print('raz data', received_order_id)
 
-        ord_id = ""
-        raz_pay_id = ""
-        raz_signature = ""
+        razorpay_order_id = data.get("razorpay_order_id")
 
-        for key in data.keys():
-            if key == "razorpay_order_id":
-                ord_id = data[key]
-            elif key == "razorpay_payment_id":
-                raz_pay_id = data[key]
-            elif key == "razorpay_signature":
-                raz_signature = data[key]
-
-        raz_pay_id = data.get("razorpay_payment_id")
-        payment_id = raz_pay_id
-
-        PUBLIC_KEY = settings.RAZORPAY_KEY_ID # Get your Razorpay settings from Django settings
+        PUBLIC_KEY = settings.RAZORPAY_KEY_ID
         SECRET_KEY = settings.RAZORPAY_KEY_SECRET
 
         client = razorpay.Client(auth=(PUBLIC_KEY, SECRET_KEY))
 
-        
-        
-  
-
         check = client.utility.verify_payment_signature(data)
+        print('working 1')
 
         if check:
-            # Payment is successful, update order status
             # try:
-                # order = Order.objects.get(id=76)
-                razorpay_order_id=data.get("razorpay_order_id")
                 order = Order.objects.get(razorpay_order_id=razorpay_order_id)
-                print( 'razor apyy',data.get("razorpay_payment_id"))
-                print( 'razorsignn',data.get("razorpay_signature"))
-              
-                
-                # order = Order.objects.get(id=73)
-                # order = Order.objects.get(id=received_order_id)
+         
+                print('razor apyy', data.get("razorpay_payment_id"))
+                print('razorsignn', data.get("razorpay_signature"))
+               
+
                 order.razorpay_payment_id = data.get("razorpay_payment_id")
                 order.razorpay_signature = data.get("razorpay_signature")
-                print('order id', ord_id)
+              
                 order.is_paid = True
-                order.is_ordered = True
-                order.save()
 
-                # You can perform other logic specific to your app here
+                try:
+                
+                    order.save()
 
-                res_data = {"message": "Payment successfully received!", "order_id": ord_id}
-                return Response(res_data)
-            # except Order.DoesNotExist:
-            #     return Response(
-            #         {"error": "Error processing payment or order not found."},
-            #         status=status.HTTP_400_BAD_REQUEST,
-            #     )
-        else:
-            # Payment verification failed
-            return Response(
-                {"error": "Payment verification failed."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+                except Exception as e:
+                    return Response( status=status.HTTP_200_OK)
+            
+             
+                
+                
+                print('working 4')
+
+                res_data = {"message": "Payment successfully received!", "order_id": razorpay_order_id}
+                return Response(res_data, status=status.HTTP_200_OK)
+
+        #     except Order.DoesNotExist:
+        #         return Response(
+        #             {"error": "Error processing payment or order not found."},
+        #             status=status.HTTP_400_BAD_REQUEST,
+        #         )
+        # else:
+        #     return Response(
+        #         {"error": "Payment verification failed."},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
 
 
 
@@ -461,11 +567,13 @@ from rest_framework.response import Response
 from rest_framework import status
 
 class CancelOrderView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
             order_id = request.data.get('order_number')
+            print('id',order_id)
+            
          
 
             current_user = request.user
@@ -474,6 +582,8 @@ class CancelOrderView(APIView):
             order = Order.objects.get(id=order_id)
             order_number = order.order_number
             order_total = order.order_total
+
+            print('order',order)
 
             # Get the user associated with the current_user
             user = get_object_or_404(Account, email=current_user.email)
@@ -486,6 +596,7 @@ class CancelOrderView(APIView):
             RAZORPAY_KEY_SECRET = settings.RAZORPAY_KEY_SECRET
 
             client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+            
 
             # Calculate admin fee
             admin_fee = (0.15 * amount_in_paise) / 100
@@ -508,7 +619,7 @@ class CancelOrderView(APIView):
                 # Perform the cancellation logic
             order.status = 'Cancelled'
             order.is_ordered = False
-            order.save()
+            # order.save()
 
             # You should associate this order with your specific logic in your app
 
@@ -525,6 +636,82 @@ class CancelOrderView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+from django.views import View
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+import razorpay
+
+# Replace with your Razorpay API key and secret
+RAZORPAY_KEY_ID = settings.RAZORPAY_KEY_ID
+RAZORPAY_KEY_SECRET = settings.RAZORPAY_KEY_SECRET
+
+# Initialize Razorpay client
+razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+class RefundPaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, orderid):
+        try:
+            print('order id', orderid)
+                # order.status = 'Cancelled'
+                # order.is_ordered = False
+                # order.save()
+            order=Order.objects.get(id=orderid)
+            print('this order',order.status)
+            order.status = 'Cancelled'
+            # order.is_ordered = False
+            order.save()
+            PUBLIC_KEY = settings.RAZORPAY_KEY_ID
+            SECRET_KEY = settings.RAZORPAY_KEY_SECRET
+
+            client = razorpay.Client(auth=(PUBLIC_KEY, SECRET_KEY))
+            
+            paymentid=order.razorpay_payment_id
+            print('order', )
+            # Fetch the payment details from Razorpay
+
+            payment = client.payment.fetch(paymentid)
+            print('id paymnt',payment)
+            print('yes1')
+            payment_id = order.razorpay_payment_id
+            # print('id of pay',payment_id)
+
+            orderid=order.razorpay_order_id
+            order_total=order.order_total
+            amount = int(float(order_total) * 100)
+            print('amount',amount)
+
+         
+
+            # Check if the payment is successful and has a refund_id
+            if payment.get('status') == 'captured' and payment.get('refund_id') is None:
+                print('order',order)
+                # Initiate refund
+                refund = client.payment.refund(paymentid, amount)
+                order.status = 'Cancelled'
+                # order.is_ordered = False
+                order.save()
+           
+                print('yes2.5')
+
+
+        
+                if refund.get('status') == 'processed':
+                    print('yes3')
+                    return Response({'message': 'Food item availability updated successfully'}, status=200)
+                else:
+                    return JsonResponse({'status': 'error', 'message': 'Refund failed'})
+
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Payment is not eligible for refund'})
+
+        except razorpay.errors.NotFoundError:
+            return JsonResponse({'status': 'error', 'message': 'Payment not found'})
+        except razorpay.errors.RazorpayError as e:
+            return JsonResponse({'status': 'error', 'message': f'Razorpay error: {str(e)}'})
 
 
 
@@ -546,6 +733,13 @@ from rest_framework.response import Response
 from .serializers import OrderCreateSerializer  # Import your OrderCreateSerializer
 from .models import Order  # Import your Order model
 
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from .models import Order
+from .serializers import OrderCreateSerializer
+
 class OrderView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderCreateSerializer
@@ -565,8 +759,7 @@ class OrderView(RetrieveAPIView):
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
         return Response({"detail": "Order not found"}, status=404)
-    
-    
+
     
 
 
@@ -634,7 +827,7 @@ class UserOrderView(APIView):
                 return Response({'error': 'User is not authenticated.'}, status=status.HTTP_UNAUTHORIZED)
 
             # Filter orders by the user ID, is_ordered, and is_paid
-            orders = Order.objects.filter(user=user, is_ordered=True, is_paid=True)
+            orders = Order.objects.filter(user=user, is_ordered=True, is_paid=True).order_by('-id')
 
             # Serialize the orders using your OrderSerializer
             serializer = OrderSerializer(orders, many=True)
@@ -733,3 +926,49 @@ class AdminOrderView(APIView):
             # Log the exception for debugging
             print('Error fetching orders:', e)
             return Response({'error': 'An error occurred while fetching orders.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+# @receiver(post_save, sender=Order)
+# def order_paid_notification(sender, instance, **kwargs):
+#     print('signal working')
+#     if instance.is_paid and not kwargs.get('created', False):
+#         # Order has been paid, send a generic notification
+#         message = "Order has been paid. Thank you!"
+
+#         # Send WebSocket notification to the restaurant
+#         channel_layer = get_channel_layer()
+#         async_to_sync(channel_layer.group_send)(
+#             'restaurant_group',
+#             {
+#                 'type': 'notify.restaurant',
+#                 'message': message,
+#             }
+#         )
+
+
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Order)
+def order_paid_notification(sender, instance, **kwargs):
+    print('signal working')
+    if instance.is_paid and instance.status == 'Order Confirmed' and not kwargs.get('created', False):
+        # Order has been paid, send a notification to the corresponding restaurant
+        message = "Order has been paid. Thank you!"
+
+        # Send WebSocket notification to the restaurant
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'restaurant_group',
+            {
+                'type': 'notify.restaurant',
+                'message': message,
+                'restaurant': instance.restaurant,  # Include the restaurant field
+            }
+        )

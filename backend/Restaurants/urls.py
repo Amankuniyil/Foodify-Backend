@@ -9,7 +9,8 @@ from .views import (
     OrderCountByDayAPIView,
     ResOrderCountByDayAPIView,
     GetResProfileView,
-    OrdersPerRestaurantView
+    OrdersPerRestaurantView,
+    ResProfile
 
     )
 
@@ -23,6 +24,7 @@ urlpatterns = [
     path('update-registration-status/<int:profile_id>/', UpdateRegistrationStatusView.as_view(), name='update_registration_status'),
     path('check-registration/', CheckRegistrationView.as_view(), name='check-registration'),
      path('restaurant-profile/', AuthenticatedRestaurantProfile.as_view(), name='restaurant-profile'),
+     path('getprofile/', ResProfile.as_view(), name='getprofile'),
     path('order_count_by_day/', OrderCountByDayAPIView.as_view(), name='order_count_by_day'),
     path('res_order_count_by_day/', ResOrderCountByDayAPIView.as_view(), name='order_count_by_day'),
     path('orders-per-restaurant/<int:year>/<int:month>/<int:day>/', OrdersPerRestaurantView.as_view(), name='orders_per_restaurant'),

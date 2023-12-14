@@ -30,6 +30,9 @@ urlpatterns = [
     path('cart/', include('cart.urls')),
     path('menu/', include('menu.urls')),
     path('orders/', include('orders.urls')),
-    re_path(r'restaurants/$', consumers.OrderNotificationConsumer.as_asgi()),
+    # path("",include('chat.urls')),
+    path("",include('orders.urls')),
+    # path('chat/', include('chat.urls')),
+
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

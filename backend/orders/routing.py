@@ -1,17 +1,24 @@
+from channels.routing import ProtocolTypeRouter, URLRouter, ChannelNameRouter
+from channels.auth import AuthMiddlewareStack
 from django.urls import re_path
+from orders import consumers
 
+# routing.py
+
+# orders/routing.py
+# from django.urls import re_path
+
+# from .consumers import OrderNotificationConsumer
+
+# websocket_urlpatterns = [
+#     re_path(r'restaurant/$', OrderNotificationConsumer.as_asgi()),
+    
+# ]
+
+from django.urls import re_path
 from . import consumers
 
 websocket_urlpatterns = [
-    re_path(r'restaurant/(?P<order_id>\d+)/$', consumers.OrderNotificationConsumer.as_asgi()),
+    # re_path(r"ws/notify/", consumers.NotificationConsumer.as_asgi()),
+     re_path(r"ws/notify/(?P<resId>\d+)/$", consumers.NotificationConsumer.as_asgi()),
 ]
-
-#  re_path(r'ws/order/(?P<order_id>\d+)/restaurant/(?P<restaurant_id>\d+)/$', consumers.OrderNotificationConsumer.as_asgi()),
-
-application = ProtocolTypeRouter({
-    'websocket': AuthMiddlewareStack(
-        URLRouter(
-            websocket_urlpatterns
-        )
-    ),
-})

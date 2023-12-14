@@ -48,7 +48,7 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 SECRET_KEY = 'django-insecure-q&e+221zg4zrh*%&09zy*b9gp417)1_lt)&f79r41ot+n%wr6%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
@@ -56,6 +56,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    "daphne",
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -73,6 +74,7 @@ INSTALLED_APPS = [
     'django_redis',
     'cloudinary',
     'cloudinary_storage',
+    # 'chat',
 
     'menu',
 ]
@@ -86,20 +88,22 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Remove one of the duplicate entries for 'django.middleware.common.CommonMiddleware'
+
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 
+    
+
 ]
 
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [  "http://localhost:3000",
-    "https://foodify-frontend-six.vercel.app/",
-    'https://foodify-frontend-1ca1-lgbsyudq9-aman-ahmeds-projects.vercel.app',
+    # "https://foodify-frontend-six.vercel.app/",
+    # 'https://foodify-frontend-1ca1-lgbsyudq9-aman-ahmeds-projects.vercel.app',
 
    
 ]
    
-
+ASGI_APPLICATION = 'backend.asgi.application'
 
 CORS_ALLOW_METHODS = [
     "GET",
@@ -112,23 +116,29 @@ CORS_ALLOW_METHODS = [
 
 # settings.py
 
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
+
+
+
+
+# settings.py
+
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
 
 
 
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("localhost", 6379)],
-#         },
-#     },
-# }
 
 # CACHES = {
 #     "default": {
@@ -144,7 +154,7 @@ CHANNEL_LAYERS = {
 
 
 
-ASGI_APPLICATION='config.asgi.application'
+
 
 
 
