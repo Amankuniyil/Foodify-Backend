@@ -282,7 +282,7 @@ class ResOrderCountByDayAPIView(APIView):
             if not request.user.is_authenticated:
                 return Response({'error': 'User is not authenticated.'}, status=status.HTTP_UNAUTHORIZED)
 
-            # Replace 'your_restaurant_id' with the actual ID of the restaurant you want to filter
+            # Replace 'your _restaurant_id' with the actual ID of the restaurant you want to filter
             restaurant_id_to_filter = request.user.id  # Replace with the actual restaurant ID
             restaurant_id_to_filter = get_object_or_404(RestaurantProfile, restaurant_id=restaurant_id_to_filter)
             restaurant_id_to_filter=restaurant_id_to_filter.id
