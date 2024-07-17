@@ -202,8 +202,12 @@ from environ import Env  # Import the Env class
 env = Env()
 env.read_env()  # Read environment variables from a file if necessary
 
+# DATABASES = {
+#     'default': dj_database_url.parse(env('DATABASE_URL'))
+# }
+
 DATABASES = {
-    'default': dj_database_url.parse(env('DATABASE_URL'))
+    'default': dj_database_url.parse('postgresql://foodify_t51i_user:smya7rjQgK2Hx8jiYCLA5wmz22XKNE9i@dpg-cqc1doaj1k6c73frijug-a.singapore-postgres.render.com/foodify_t51i')
 }
 
 
