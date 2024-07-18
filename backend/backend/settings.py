@@ -74,7 +74,7 @@ INSTALLED_APPS = [
     'django_redis',
     'cloudinary',
     'cloudinary_storage',
-    'food',
+
     # 'chat',
 
     'menu',
