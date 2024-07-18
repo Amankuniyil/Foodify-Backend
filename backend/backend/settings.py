@@ -207,7 +207,7 @@ env.read_env()  # Read environment variables from a file if necessary
 # }
 
 DATABASES = {
-    'default': dj_database_url.parse('postgresql://foodify_t51i_user:smya7rjQgK2Hx8jiYCLA5wmz22XKNE9i@dpg-cqc1doaj1k6c73frijug-a.singapore-postgres.render.com/foodify_t51i')
+    'default': dj_database_url.parse('postgresql://dbfoodify_user:YkQe0Ftjz8kWqWnS1qsxOSpao1SdhHR6@dpg-cqcn54d6l47c73d868q0-a.singapore-postgres.render.com/dbfoodify')
 }
 
 
