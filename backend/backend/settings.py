@@ -326,8 +326,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
-RAZORPAY_KEY_ID = 'rzp_test_fyG9E6kHVtWCYc'
-RAZORPAY_KEY_SECRET = 'T51gkVBhBIxNG4ajcAQa1K1S'
+RAZORPAY_KEY_ID = 'rzp_test_sKb0zS2LDovc4J'
+RAZORPAY_KEY_SECRET = 'nChnRjRuHR3w39jPfdjg9Y8d'
 
 
 
