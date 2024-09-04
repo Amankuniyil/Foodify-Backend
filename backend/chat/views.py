@@ -12,6 +12,8 @@ from .serializers import MessageSerializer, AccountSerializer
 
 logger = logging.getLogger(__name__)
 
+
+
 class AccountsListView(APIView):
     def get(self, request):
         try:
@@ -43,6 +45,8 @@ class MessageListView(APIView):
 
         return Response(serializer.data)
 
+def NewMessage(request):
+    return render(request,'chat.html')
 
 class MessageCreateView(APIView):
     def post(self, request, sender_id, recipient_id):
@@ -83,3 +87,6 @@ class MessageCreateView(APIView):
         except Exception as e:
               
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
